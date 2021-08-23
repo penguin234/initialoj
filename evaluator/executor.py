@@ -1,23 +1,42 @@
 import subprocess
+import os
+import random
 
-inputFileName = "input.txt"
-outputFileName = "output.txt"
-errorFileName = "error.txt"
 
-def Execute(command):
+def Execute(command, fin, reqId):
     """
-    Execute(command : list[string]) : tuple(success: boolean, error: string)
+    Execute(command : list[string], fin : File, reqId : str) : tuple(success: boolean, output: string, error: string)
     
     executes given command with subprocess module.
     """
-    inputFile = open(inputFileName, "r")
-    outputFile = open(outputFileName, "w")
-    errorFile = open(errorFileName, "w")
+    
+    id = random.randrange(1, 100000)
+    id = str(id)
 
-    subprocess.run(command, stdin = inputFile, stdout = outputFile, stderr = errorFile)
 
-    inputFile.close()
-    outputFile.close()
-    errorFile.close()
+    fout = open(reqId+'out'+id+'.txt', 'w')
+    ferr = open(reqId+'err'+id+'.txt', 'w')
 
-    return True, ""
+    subprocess.run(command, stdin = fin, stdout = fout, stderr = ferr)
+
+    fout.close()
+    ferr.close()
+
+
+    fout = open(reqId+'out'+id+'.txt', 'r')
+    ferr = open(reqId+'err'+id+'.txt', 'r')
+
+    output = fout.read()
+    error = ferr.read()
+
+    fout.close()
+    ferr.close()
+
+    os.remove(reqId+'out'+id+'.txt')
+    os.remove(reqId+'err'+id+'.txt')
+
+
+    if len(error) > 0:
+        return False, output, error
+
+    return True, output, error

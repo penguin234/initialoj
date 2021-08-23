@@ -1,15 +1,18 @@
+import os
 
-
-def PreprocessPython(code):
+def PreprocessPython(code, reqId):
     """
-    PreprocessPython(code : string) : tuple(success: boolean, command: list[string], error: string)
+    PreprocessPython(code : string, reqId : string) : tuple(success: boolean, command: list[string], clear: func, error: string)
     
     Preprocesses python file of given code
     """
-    codeFileName = "source.py"
+    codeFileName = reqId + 'source.py'
 
-    codeFile = open(codeFileName, "w")
+    codeFile = open(codeFileName, 'w')
     codeFile.write(code)
     codeFile.close()
 
-    return True, ["python", codeFileName], ""
+    def Clear():
+        os.remove(codeFileName)
+
+    return True, ['python', codeFileName], Clear, ''

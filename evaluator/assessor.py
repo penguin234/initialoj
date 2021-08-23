@@ -1,14 +1,13 @@
 
 
 class SimpleCriteria:
-    def __init__(self, fileName):
-        file = open(fileName, 'r')
-        self.answerSheet = file.read()
-        file.close()
+    def __init__(self, answer):
+        self._answerSheet = answer.strip()
 
     def Assess(self, target):
+        return target.strip() == self._answerSheet
         
 
 
 def Assess(output, criteria):
-    
+    return criteria.Assess(output)

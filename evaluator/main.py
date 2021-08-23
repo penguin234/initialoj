@@ -1,12 +1,67 @@
 from preprocessor import PreprocessPython
 from executor import Execute
+from assessor import Assess
+
+import os
+import random
 
 
-def Eveluate():
-    preprocessSucceed, executeCommand, preprocessError = PreprocessPython(code)
+"""
+resultType
+-0: correct
+-1: compile error
+-2: runtime error
+-3: wrong answer
+"""
+
+def Evaluate(code, problem):
+    """
+    Evaluate(code : string, problem : Problem) : tuple(resultType : int, failReason : string)
+    """
+    reqId = random.randrange(1, 100000)
+    reqId = str(reqId)
+
+    preprocessSucceed, executeCommand, clear, preprocessError = PreprocessPython(code, reqId)
     if not preprocessSucceed:
-        return preprocessError
+        return 1, preprocessError
     
-    executeSucceed, executeError = Execute(executeCommand)
-    if not executeSucceed:
-        return executeError
+    for case in problem.GetCases():
+        fin = open(reqId + 'input.txt', 'w')
+        fin.write(case.GetInputData())
+        fin.close()
+
+        fin = open(reqId + 'input.txt', 'r')
+        executeSucceed, executeResult, executeError = Execute(executeCommand, fin, reqId)
+        fin.close()
+
+        os.remove(reqId + 'input.txt')
+
+        if not executeSucceed:
+            clear()
+            return 2, executeError
+        
+        if not Assess(executeResult, case.GetCriteria()):
+            clear()
+            return 3, 'Wrong Answer'
+
+    clear()
+    return 0, ''
+
+
+
+source = """
+a = int(input())
+print(a * a)
+"""
+
+
+
+from examples import problems
+
+code1 = """
+a = int(input())
+b = int(input())
+print(a * b)
+"""
+print("code1")
+print(Evaluate(code1, problems[3]))
