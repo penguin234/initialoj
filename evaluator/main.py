@@ -46,22 +46,3 @@ def Evaluate(code, problem):
 
     clear()
     return 0, ''
-
-
-
-source = """
-a = int(input())
-print(a * a)
-"""
-
-
-
-from examples import problems
-
-code1 = """
-a = int(input())
-b = int(input())
-print(a * b)
-"""
-print("code1")
-print(Evaluate(code1, problems[3]))
